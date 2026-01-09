@@ -97,8 +97,11 @@ public class Walking : MonoBehaviour {
 
 	private void teleport()
     {
-
-    }
+		if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger))
+		{
+			this.transform.position += -transform.forward * 2.0f;
+		}
+	}
 
 	public float ControllerShakingMagnitude = 1.0f;
 	private float acceleration_delta = 0.5f;
