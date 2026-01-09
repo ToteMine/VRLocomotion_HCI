@@ -5,13 +5,17 @@ using UnityEngine;
 
 public class Walking : MonoBehaviour {
 	public float movementswitch_delay = 1.0f;
+	
+	
 	private float lastMovementUpdate = 0f;
 
 	public OVRPlayerController playerController;
+	public OVRCameraRig cameraRig;
+
+	public  MovementType currMovement = MovementType.SUPERMAN;
 
 
-	private movementType currMovement = movementType.CONTROLLER_SHAKING;
-	movementType[] allMovements = (movementType[])Enum.GetValues(typeof(movementType));
+	MovementType[] allMovements = (MovementType[])Enum.GetValues(typeof(MovementType));
 	int currentIndex = 0;
 	// Use this for initialization
 	void Start () {
@@ -39,18 +43,20 @@ public class Walking : MonoBehaviour {
 			print("changed to movement:" + currMovement);
 		}
 
-		print(OVRInput.GetLocalControllerVelocity(OVRInput.Controller.LTouch));
 
 		switch (currMovement)
         {
-			case movementType.PRIMARY_INDEX_TRIGGER:
+			case MovementType.PRIMARY_INDEX_TRIGGER:
 				primaryIndexTriggerMovement();
 				break;
-			case movementType.TELEPORT:
+			case MovementType.TELEPORT:
 				teleport();
 				break;
-			case movementType.CONTROLLER_SHAKING:
+			case MovementType.CONTROLLER_SHAKING:
 				controllerShaking();
+				break;
+			case MovementType.SUPERMAN:
+				superman();
 				break;
 			default:
 				break;
@@ -58,6 +64,28 @@ public class Walking : MonoBehaviour {
 
     }
 
+	private readonly float minYlevelSM = -0.1f;
+	private readonly float maxYlevelSM = 0.1f;
+	private void superman()
+    {
+
+		Vector3 hmdpos = cameraRig.centerEyeAnchor.transform.position;
+		Vector3 leftWorldPos = cameraRig.leftHandAnchor.transform.position;
+		Vector3 rightWorldPos = cameraRig.rightHandAnchor.transform.position;
+		print(hmdpos + " - " + leftWorldPos + " - " + rightWorldPos);
+
+
+
+		Vector3 leftPosLocal = hmdpos - leftWorldPos;
+		Vector3 rightPosLocal = hmdpos - rightWorldPos;
+
+		if (maxYlevelSM > leftPosLocal.y &  leftPosLocal.y > minYlevelSM & maxYlevelSM > rightPosLocal.y & rightPosLocal.y > minYlevelSM)
+        {
+			this.transform.position += -transform.forward * Time.deltaTime * 1;
+		}
+
+		//print("left " + leftPosLocal + " -- " + "right " + rightPosLocal);
+	}
 
 	private void primaryIndexTriggerMovement()
     {
@@ -79,9 +107,9 @@ public class Walking : MonoBehaviour {
 		Vector3 velocity_left = OVRInput.GetLocalControllerVelocity(OVRInput.Controller.LTouch);
 		Vector3 velocity_right = OVRInput.GetLocalControllerVelocity(OVRInput.Controller.RTouch);
 
-		print("vel left " + velocity_left + " -- " + "vel right " + velocity_right);
+		//print("vel left " + velocity_left + " -- " + "vel right " + velocity_right);
 
-		print("mag left " + velocity_left.sqrMagnitude + " -- " + "mag right " + velocity_right.sqrMagnitude);
+		//print("mag left " + velocity_left.sqrMagnitude + " -- " + "mag right " + velocity_right.sqrMagnitude);
 
 		if(velocity_left.sqrMagnitude > ControllerShakingMagnitude & velocity_right.sqrMagnitude > ControllerShakingMagnitude)
         {
@@ -93,11 +121,13 @@ public class Walking : MonoBehaviour {
 
 
 	}
+}
 
-	enum movementType
-	{
-		PRIMARY_INDEX_TRIGGER=0,
-		TELEPORT=1,
-		CONTROLLER_SHAKING=2,
-	}
+
+public enum MovementType
+{
+	PRIMARY_INDEX_TRIGGER = 0,
+	TELEPORT = 1,
+	CONTROLLER_SHAKING = 2,
+	SUPERMAN = 3,
 }
