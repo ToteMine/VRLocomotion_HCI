@@ -1,13 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
-
+using TMPro;
 public class GoalTrigger : MonoBehaviour
-{
-    public Text timerText;
+{ 
     public AudioSource goalSound;
 
     private float startTime;
     private bool finished = false;
+
+    public varDisplay display;
 
     void Start()
     {
@@ -23,11 +24,11 @@ public class GoalTrigger : MonoBehaviour
         {
             finished = true;
 
-            float endTime = Time.time - startTime;
+            float endTime = Time.timeSinceLevelLoad;
 
-            if (timerText != null)
+            if (display != null)
             {
-                timerText.text = "Ziel erreicht!\nZeit: " 
+                display.finisherText = "Ziel erreicht!\nZeit: " 
                                 + endTime.ToString("F2") + " Sekunden";
             }
 

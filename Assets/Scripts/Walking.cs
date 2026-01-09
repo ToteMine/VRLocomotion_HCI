@@ -72,7 +72,7 @@ public class Walking : MonoBehaviour {
 		Vector3 hmdpos = cameraRig.centerEyeAnchor.transform.position;
 		Vector3 leftWorldPos = cameraRig.leftHandAnchor.transform.position;
 		Vector3 rightWorldPos = cameraRig.rightHandAnchor.transform.position;
-		print(hmdpos + " - " + leftWorldPos + " - " + rightWorldPos);
+		//print(hmdpos + " - " + leftWorldPos + " - " + rightWorldPos);
 
 
 

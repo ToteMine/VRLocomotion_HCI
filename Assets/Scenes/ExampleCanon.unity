@@ -876,6 +876,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: OVRPlayerController
       objectReference: {fileID: 0}
+    - target: {fileID: 100008, guid: ce816f2e6abb0504092c23ed9b970dfd, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 400006, guid: ce816f2e6abb0504092c23ed9b970dfd, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -2282,6 +2286,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4281780448642680, guid: 0f9577b4dda6cc546abea4737be5a392, type: 3}
   m_PrefabInstance: {fileID: 683167418}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &713548583 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 11400020, guid: ce816f2e6abb0504092c23ed9b970dfd, type: 3}
+  m_PrefabInstance: {fileID: 189105528}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df9f338034892c44ebb62d97894772f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &717394340
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4099,6 +4114,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walking: {fileID: 1336727690}
   textComponent: {fileID: 1715058207}
+  finisherText: 
 --- !u!1001 &1256876725
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4372,6 +4388,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementswitch_delay: 1
   playerController: {fileID: 1336727693}
+  cameraRig: {fileID: 713548583}
   currMovement: 3
   ControllerShakingMagnitude: 1
 --- !u!114 &1336727693 stripped
@@ -5938,8 +5955,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a2004cc94c25184db3b7ffa4818d9f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timerText: {fileID: 0}
   goalSound: {fileID: 0}
+  display: {fileID: 1255150128}
 --- !u!65 &2069974036
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5948,7 +5965,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2069974034}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}

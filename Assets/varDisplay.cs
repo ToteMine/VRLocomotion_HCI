@@ -10,6 +10,8 @@ public class varDisplay : MonoBehaviour
 
     public TMP_Text textComponent;
 
+    public string finisherText = "";
+
     void Start()
     {
         textComponent.fontSize = 20;
@@ -28,6 +30,15 @@ public class varDisplay : MonoBehaviour
 
     void UpdateText()
     {
+
+        if(finisherText != "")
+        {
+            print("FINISHERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
+            textComponent.text = finisherText;
+            return;
+        }
+
+        print("NNOFINISHER");
 
         textComponent.text = "Gewähltes Movement: " + walking.currMovement.ToString();  // F1 = 1 Dezimal
     }
