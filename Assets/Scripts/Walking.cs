@@ -7,10 +7,10 @@ public class Walking : MonoBehaviour {
 	public float movementswitch_delay = 1.0f;
 	private float lastMovementUpdate = 0f;
 
-	private readonly float Acceleration = 1;
+	public OVRPlayerController playerController;
 
 
-	private movementType currMovement = movementType.PRIMARY_INDEX_TRIGGER;
+	private movementType currMovement = movementType.CONTROLLER_SHAKING;
 	movementType[] allMovements = (movementType[])Enum.GetValues(typeof(movementType));
 	int currentIndex = 0;
 	// Use this for initialization
@@ -22,7 +22,14 @@ public class Walking : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
+		OVRInput.Update();
+		
+		//jump
+		if (OVRInput.Get(OVRInput.Button.One))
+        {
+			playerController.Jump();
+        }
+		
 		//wenn movement switch button gedrückt und seit letztem press n sekunden vergangen sind
         if (OVRInput.Get(OVRInput.Button.Four) & Time.timeSinceLevelLoad - this.lastMovementUpdate > movementswitch_delay)
         {
@@ -32,7 +39,9 @@ public class Walking : MonoBehaviour {
 			print("changed to movement:" + currMovement);
 		}
 
-        switch (currMovement)
+		print(OVRInput.GetLocalControllerVelocity(OVRInput.Controller.LTouch));
+
+		switch (currMovement)
         {
 			case movementType.PRIMARY_INDEX_TRIGGER:
 				primaryIndexTriggerMovement();
@@ -40,8 +49,8 @@ public class Walking : MonoBehaviour {
 			case movementType.TELEPORT:
 				teleport();
 				break;
-			case movementType.HEAD_BOBBING:
-				headBobbing();
+			case movementType.CONTROLLER_SHAKING:
+				controllerShaking();
 				break;
 			default:
 				break;
@@ -54,7 +63,7 @@ public class Walking : MonoBehaviour {
     {
 		if (OVRInput.Get(OVRInput.Button.PrimaryIndexTrigger))
 		{
-			this.transform.position += -transform.forward * Time.deltaTime * Acceleration;
+			this.transform.position += -transform.forward * Time.deltaTime * 1;
 		}
 	}
 
@@ -66,15 +75,32 @@ public class Walking : MonoBehaviour {
 		}
 	}
 
-	private void headBobbing()
+	public float ControllerShakingMagnitude = 1.0f;
+	private float acceleration_delta = 0.5f;
+	private void controllerShaking()
     {
+		Vector3 velocity_left = OVRInput.GetLocalControllerVelocity(OVRInput.Controller.LTouch);
+		Vector3 velocity_right = OVRInput.GetLocalControllerVelocity(OVRInput.Controller.RTouch);
 
-    }
+		print("vel left " + velocity_left + " -- " + "vel right " + velocity_right);
+
+		print("mag left " + velocity_left.sqrMagnitude + " -- " + "mag right " + velocity_right.sqrMagnitude);
+
+		if(velocity_left.sqrMagnitude > ControllerShakingMagnitude & velocity_right.sqrMagnitude > ControllerShakingMagnitude)
+        {
+			float acceleration = (velocity_left.sqrMagnitude + velocity_right.sqrMagnitude) / 2;
+
+			this.transform.position += -transform.forward * Time.deltaTime * acceleration * acceleration_delta;
+		}
+
+
+
+	}
 
 	enum movementType
 	{
 		PRIMARY_INDEX_TRIGGER=0,
 		TELEPORT=1,
-		HEAD_BOBBING=2,
+		CONTROLLER_SHAKING=2,
 	}
 }
