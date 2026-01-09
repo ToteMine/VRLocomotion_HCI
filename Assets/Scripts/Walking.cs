@@ -60,8 +60,11 @@ public class Walking : MonoBehaviour {
 
 	private void teleport()
     {
-
-    }
+		if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger))
+		{
+			this.transform.position += -transform.forward * 2.0f;
+		}
+	}
 
 	private void headBobbing()
     {
