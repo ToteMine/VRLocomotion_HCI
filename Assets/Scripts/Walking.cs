@@ -10,16 +10,26 @@ public class Walking : MonoBehaviour {
 	private float lastMovementUpdate = 0f;
 
 	public OVRPlayerController playerController;
+	CharacterController cc;
+
 	public OVRCameraRig cameraRig;
 
 	public  MovementType currMovement = MovementType.SUPERMAN;
+
+
+	public float stickDeadzone = 0.6f;
+	public float stickSwitchDelay = 0.5f;
+	private float lastStickSwitch = 0f;
+	private bool stickWasCentered = true;
+	private bool jumpPressedLastFrame = false;
+
 
 
 	MovementType[] allMovements = (MovementType[])Enum.GetValues(typeof(MovementType));
 	int currentIndex = 0;
 	// Use this for initialization
 	void Start () {
-
+    	cc = playerController.GetComponent<CharacterController>();
 		print("Num Of Movements");
 		print(allMovements.Length);
 	}
@@ -29,13 +39,19 @@ public class Walking : MonoBehaviour {
 		OVRInput.Update();
 		
 		//jump
-		if (OVRInput.Get(OVRInput.Button.One))
-        {
+		bool jumpPressedNow = OVRInput.Get(OVRInput.Button.One);
+
+		if (jumpPressedNow && !jumpPressedLastFrame)
+		{
+			Debug.Log("JUMP BUTTON DOWN SIMULATED");
 			playerController.Jump();
-        }
+		}
+		jumpPressedLastFrame = jumpPressedNow;
+
+		joystickMovementSelector();
 		
 		//wenn movement switch button gedrückt und seit letztem press n sekunden vergangen sind
-        if (OVRInput.Get(OVRInput.Button.Four) & Time.timeSinceLevelLoad - this.lastMovementUpdate > movementswitch_delay)
+        if (OVRInput.Get(OVRInput.Button.Four) && Time.timeSinceLevelLoad - this.lastMovementUpdate > movementswitch_delay)
         {
 			lastMovementUpdate = Time.timeSinceLevelLoad;
 			currentIndex = (currentIndex + 1) % allMovements.Length;
@@ -72,14 +88,14 @@ public class Walking : MonoBehaviour {
 		Vector3 hmdpos = cameraRig.centerEyeAnchor.transform.position;
 		Vector3 leftWorldPos = cameraRig.leftHandAnchor.transform.position;
 		Vector3 rightWorldPos = cameraRig.rightHandAnchor.transform.position;
-		//print(hmdpos + " - " + leftWorldPos + " - " + rightWorldPos);
+		print(hmdpos + " - " + leftWorldPos + " - " + rightWorldPos);
 
 
 
 		Vector3 leftPosLocal = hmdpos - leftWorldPos;
 		Vector3 rightPosLocal = hmdpos - rightWorldPos;
 
-		if (maxYlevelSM > leftPosLocal.y &  leftPosLocal.y > minYlevelSM & maxYlevelSM > rightPosLocal.y & rightPosLocal.y > minYlevelSM)
+		if (maxYlevelSM > leftPosLocal.y && leftPosLocal.y > minYlevelSM && maxYlevelSM > rightPosLocal.y && rightPosLocal.y > minYlevelSM)
         {
 			this.transform.position += -transform.forward * Time.deltaTime * 1;
 		}
@@ -114,7 +130,7 @@ public class Walking : MonoBehaviour {
 
 		//print("mag left " + velocity_left.sqrMagnitude + " -- " + "mag right " + velocity_right.sqrMagnitude);
 
-		if(velocity_left.sqrMagnitude > ControllerShakingMagnitude & velocity_right.sqrMagnitude > ControllerShakingMagnitude)
+		if(velocity_left.sqrMagnitude > ControllerShakingMagnitude && velocity_right.sqrMagnitude > ControllerShakingMagnitude)
         {
 			float acceleration = (velocity_left.sqrMagnitude + velocity_right.sqrMagnitude) / 2;
 
@@ -124,6 +140,33 @@ public class Walking : MonoBehaviour {
 
 
 	}
+
+	private void joystickMovementSelector()
+	{
+		Vector2 stick = OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick);
+		Debug.Log("Thumbstick: " + stick);
+
+		if (stick.magnitude < stickDeadzone)
+		{
+			stickWasCentered = true;
+			return;
+		}
+
+		if (!stickWasCentered)
+			return;
+
+		stickWasCentered = false;
+
+		if (Mathf.Abs(stick.y) > Mathf.Abs(stick.x))
+			currMovement = stick.y > 0 ? MovementType.SUPERMAN
+									: MovementType.PRIMARY_INDEX_TRIGGER;
+		else
+			currMovement = stick.x > 0 ? MovementType.CONTROLLER_SHAKING
+									: MovementType.TELEPORT;
+
+		Debug.Log("Joystick switched to: " + currMovement);
+	}
+
 }
 
 
