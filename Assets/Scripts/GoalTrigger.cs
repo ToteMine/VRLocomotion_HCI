@@ -10,11 +10,19 @@ public class GoalTrigger : MonoBehaviour
     private float startTime;
     private bool finished = false;
 
+    public GameObject startCube;
+
     public varDisplay display;
 
     void Start()
     {
         startTime = Time.time;
+    }
+
+    public void startTimer()
+    {
+        startTime = Time.time;
+        finished = false;
     }
 
     void OnTriggerEnter(Collider other)
