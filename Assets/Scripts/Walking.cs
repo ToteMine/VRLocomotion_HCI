@@ -104,19 +104,33 @@ public class Walking : MonoBehaviour {
 	}
 
 	private void primaryIndexTriggerMovement()
-    {
-		if (OVRInput.Get(OVRInput.Button.PrimaryIndexTrigger))
+	{
+		float leftGrip  = OVRInput.Get(OVRInput.Axis1D.PrimaryHandTrigger);
+		float rightGrip = OVRInput.Get(OVRInput.Axis1D.SecondaryHandTrigger);
+
+		float grip = Mathf.Max(leftGrip, rightGrip);
+
+		if (grip > 0.1f)
 		{
-			this.transform.position += -transform.forward * Time.deltaTime * 1;
+			this.transform.position += -transform.forward * grip * Time.deltaTime * 2f;
 		}
 	}
 
+	private float lastGrip = 0f;
+
 	private void teleport()
-    {
-		if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger))
+	{
+		float grip = Mathf.Max(
+			OVRInput.Get(OVRInput.Axis1D.PrimaryHandTrigger),
+			OVRInput.Get(OVRInput.Axis1D.SecondaryHandTrigger)
+		);
+
+		if (grip > 0.8f && lastGrip <= 0.8f)
 		{
-			this.transform.position += -transform.forward * 2.0f;
+			this.transform.position += -transform.forward * 1.0f;
 		}
+
+		lastGrip = grip;
 	}
 
 	public float ControllerShakingMagnitude = 1.0f;
@@ -130,7 +144,7 @@ public class Walking : MonoBehaviour {
 
 		//print("mag left " + velocity_left.sqrMagnitude + " -- " + "mag right " + velocity_right.sqrMagnitude);
 
-		if(velocity_left.sqrMagnitude > ControllerShakingMagnitude && velocity_right.sqrMagnitude > ControllerShakingMagnitude)
+		if(velocity_left.sqrMagnitude > ControllerShakingMagnitude || velocity_right.sqrMagnitude > ControllerShakingMagnitude)
         {
 			float acceleration = (velocity_left.sqrMagnitude + velocity_right.sqrMagnitude) / 2;
 
@@ -158,11 +172,11 @@ public class Walking : MonoBehaviour {
 		stickWasCentered = false;
 
 		if (Mathf.Abs(stick.y) > Mathf.Abs(stick.x))
-			currMovement = stick.y > 0 ? MovementType.SUPERMAN
-									: MovementType.PRIMARY_INDEX_TRIGGER;
+			currMovement = stick.y > 0 ? MovementType.PRIMARY_INDEX_TRIGGER
+									: MovementType.CONTROLLER_SHAKING;
 		else
-			currMovement = stick.x > 0 ? MovementType.CONTROLLER_SHAKING
-									: MovementType.TELEPORT;
+			currMovement = stick.x > 0 ? MovementType.TELEPORT
+									: MovementType.SUPERMAN;
 
 		Debug.Log("Joystick switched to: " + currMovement);
 	}
